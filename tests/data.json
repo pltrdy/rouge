@@ -1,0 +1,84 @@
+[{
+  "hyp": "the #### transcript is a written version of each day 's cnn student news program use this transcript to help students with reading comprehension and vocabulary use the weekly newsquiz to test your knowledge of storie s you saw on cnn student news",
+  "ref": "this page includes the show transcript use the transcript to help students with reading comprehension and vocabulary at the bottom of the page , comment for a chance to be mentioned on cnn student news . you must be a teacher or a student age # # or older to request a mention on the cnn student news roll call . the weekly newsquiz tests students ' knowledge of even ts in the news",
+  "scores": {
+    "rouge-1": {
+      "f": 0.5238095189484127,
+      "p": 0.6285714285714286,
+      "r": 0.4489795918367347
+    },
+    "rouge-2": {
+      "f": 0.27027026566025497,
+      "p": 0.375,
+      "r": 0.2112676056338028
+    },
+    "rouge-l": {
+      "f": 0.28711800978275975,
+      "p": 0.4418604651162791,
+      "r": 0.25675675675675674
+    }
+  }
+}, {
+  "hyp": "a u.s. citizen was killed in a a shootout in mississippi in #### he was shot in the head and died in a batht ub in omaha , louisiana authorities are investigating the death",
+  "ref": "the fugitive who killed the marshal was \" extremely dangerous , \" u.s. marshals service director says deputy u.s. marshal josie wells , ## , died after trying to arrest jamie croom \" before he 'd go back to jail , he said , he 'd rather be dead, \" croom 's sister says",
+  "scores": {
+    "rouge-1": {
+      "f": 0.2258064468678461,
+      "p": 0.2916666666666667,
+      "r": 0.18421052631578946
+    },
+    "rouge-2": {
+      "f": 0.0,
+      "p": 0.0,
+      "r": 0.0
+    },
+    "rouge-l": {
+      "f": 0.08277768742881507,
+      "p": 0.11764705882352941,
+      "r": 0.07407407407407407
+    }
+  }
+}, {
+  "hyp": "nelson mandela is a women 's advocate for women , nelson mandela says nelson mandela is a women 's advocate for women she says women do n't know how women are women",
+  "ref": "cnn 's kelly wallace wonders why women too often do n't lift each up in the workplace author of \" the woman code \" says women need to start operating like the boys women need to realize they win when they help other women get ahead , says author",
+
+
+
+  "scores": {
+    "rouge-1": {
+      "f": 0.22222221805212622,
+      "p": 0.375,
+      "r": 0.15789473684210525
+    },
+    "rouge-2": {
+      "f": 0.0588235250346024,
+      "p": 0.09090909090909091,
+      "r": 0.043478260869565216
+    },
+    "rouge-l": {
+      "f": 0.13662019585545962,
+      "p": 0.1875,
+      "r": 0.12244897959183673
+    }
+  }
+}, {
+  "hyp": "the captain of the delta flight was en route to <unk> airport , the coast guard says the plane was carrying ### passengers and ## crew members the plane was en route from atlanta to the dominican republic",
+  "ref": "delta air lines flight #### skidded into a fence last week at a laguardia airport beset by winter weather the ntsb says the crew reported they did not sense any deceleration from the wheel brake upon landing",
+  "scores": {
+    "rouge-1": {
+      "f": 0.2295081917871541,
+      "p": 0.25925925925925924,
+      "r": 0.20588235294117646
+    },
+    "rouge-2": {
+      "f": 0.028985502255829465,
+      "p": 0.030303030303030304,
+      "r": 0.027777777777777776
+    },
+    "rouge-l": {
+      "f": 0.23991471215299215,
+      "p": 0.23684210526315788,
+      "r": 0.24324324324324326
+    }
+  }
+}]
