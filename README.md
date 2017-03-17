@@ -36,10 +36,13 @@ e.g.
 ```shell
 # Single Sentence
 rouge "transcript is a written version of each day 's cnn student" \
-      ""this page includes the show transcript use the transcript to help students with"
+      "this page includes the show transcript use the transcript to help students with"
 
 # Scoring using two files (line by line)
 rouge -f ./tests/hyp.txt ./ref.txt
+
+# Avg scoring - 2 files
+rouge -f ./tests/hyp.txt ./ref.txt --avg
 ```
 
 #### As a library
