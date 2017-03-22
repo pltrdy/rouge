@@ -1,6 +1,12 @@
 # Rouge
 *A full Python librarie for the ROUGE metric [(paper)](http://www.aclweb.org/anthology/W04-1013).*
 
+### Disclaimer
+This is an experimental project.   
+The results are known to be quite different from official ROUGE scoring script. 
+
+see [isssue #2](https://github.com/pltrdy/rouge/issues/2)
+
 ## Quickstart
 #### Clone & Install
 ```shell
