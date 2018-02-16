@@ -10,21 +10,22 @@ setup(
     download_url="https://github.com/pltrdy/rouge/archive/%s.tar.gz" % version,
     author="pltrdy",
     author_email="pltrdy@gmail.com",
-    keywords=["NL", "CL", "natural language processing", "computational linguistics", "summarization"],
+    keywords=["NL", "CL", "natural language processing",
+              "computational linguistics", "summarization"],
     packages=find_packages(),
     classifiers=[
         "Intended Audience :: Science/Research",
         "Programming Language :: Python :: 3",
         "Topic :: Text Processing :: Linguistic"
-        ],
+    ],
     license="LICENCE.txt",
     long_description=open("README.md").read(),
     test_suite="nose.collector",
     tests_require=['nose'],
 
     entry_points={
-      'console_scripts': [
-        'rouge=bin.rouge_cmd:main'
-      ]
+        'console_scripts': [
+            'rouge=bin.rouge_cmd:main'
+        ]
     }
 )
