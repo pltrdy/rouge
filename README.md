@@ -10,7 +10,7 @@ see [isssue #2](https://github.com/pltrdy/rouge/issues/2)
 ## Quickstart
 #### Clone & Install
 ```shell
-git clone https://github.com/pltrdy/pyrouge
+git clone https://github.com/pltrdy/rouge
 cd pyrouge
 sudo python3 setup.py install
 ```
