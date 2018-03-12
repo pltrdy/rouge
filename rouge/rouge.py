@@ -70,7 +70,7 @@ class Rouge:
                 raise ValueError("Unknown stat '%s'" % s)
 
     def get_scores(self, hyps, refs, avg=False):
-        if type(hyps) == str or type(hyps) == unicode:
+        if type(hyps) == str:
             hyps, refs = [hyps], [refs]
 
         assert(type(hyps) == type(refs))
