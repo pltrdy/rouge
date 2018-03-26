@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import six
 import rouge.rouge_score as rouge_score
 import os
 
@@ -71,7 +70,7 @@ class Rouge:
                 raise ValueError("Unknown stat '%s'" % s)
 
     def get_scores(self, hyps, refs, avg=False):
-        if isinstance(hyps, string_types):
+        if type(hyps) == str or type(hyps) == unicode:
             hyps, refs = [hyps], [refs]
 
         assert(type(hyps) == type(refs))
