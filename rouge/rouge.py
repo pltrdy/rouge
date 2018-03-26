@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import rouge.rouge_score as rouge_score
 import six
+import rouge.rouge_score as rouge_score
 import os
 
 
