@@ -71,7 +71,7 @@ class Rouge:
                 raise ValueError("Unknown stat '%s'" % s)
 
     def get_scores(self, hyps, refs, avg=False):
-        if isinstance(hyps, string_types):
+        if isinstance(hyps, six.string_types):
             hyps, refs = [hyps], [refs]
 
         assert(type(hyps) == type(refs))
