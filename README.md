@@ -2,21 +2,21 @@
 *A full Python librarie for the ROUGE metric [(paper)](http://www.aclweb.org/anthology/W04-1013).*
 
 ### Disclaimer
-This is an experimental project.   
-The results are known to be quite different from official ROUGE scoring script. 
-
-see [isssue #2](https://github.com/pltrdy/rouge/issues/2)
+This implementation is independant from the "official" ROUGE script (aka. `ROUGE-155`).   
+Results may be *slighlty* different, see [discussions in #2](https://github.com/pltrdy/rouge/issues/2).
 
 ## Quickstart
 #### Clone & Install
 ```shell
 git clone https://github.com/pltrdy/rouge
 cd pyrouge
-sudo python3 setup.py install
+python setup.py install
+# or
+pip install -U .
 ```
 or from pip:
 ```
-sudo pip3 install rouge
+pip install rouge
 ```
 #### Use it from the shell (JSON Output)
 ```
