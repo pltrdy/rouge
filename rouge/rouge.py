@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import six
 import rouge.rouge_score as rouge_score
+import io
 import os
 
 
@@ -15,8 +16,9 @@ class FilesRouge:
 
         def line_count(path):
             count = 0
-            for line in open(path):
-                count += 1
+            with open(path, "rb") as f:
+                for line in f:
+                    count += 1
             return count
 
         hyp_lc = line_count(hyp_path)
@@ -39,8 +41,10 @@ class FilesRouge:
         """
         hyp_path, ref_path = self.hyp_path, self.ref_path
 
-        hyps = [line[:-1] for line in open(hyp_path).readlines()]
-        refs = [line[:-1] for line in open(ref_path).readlines()]
+        with io.open(hyp_path, encoding="utf-8", mode="r") as hyp_file:
+            hyps = [line[:-1] for line in hyp_file]
+        with io.open(ref_path, encoding="utf-8", mode="r") as ref_file:
+            refs = [line[:-1] for line in ref_file]
 
         return self.rouge.get_scores(hyps, refs, avg=avg)
 
