@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
-import rouge
 
-version = rouge.__version__
+version = "0.3.1"
 setup(
     name="rouge",
     version=version,
