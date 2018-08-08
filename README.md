@@ -128,5 +128,3 @@ scores = files_rouge.get_scores()
 # or
 scores = files_rouge.get_scores(avg=True)
 ```
-
-**Note** that you can avoid consuming too much memory by using `batch_line=l`. This way, the script will read only `l` lines at a time. (otherwise it loads the whole files). 
