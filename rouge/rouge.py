@@ -31,7 +31,7 @@ class FilesRouge:
         self.ref_path = ref_path
         self.batch_lines = batch_lines
 
-    def get_scores(self, avg=False):
+    def get_scores(self, avg=False, ignore_empty=False):
         """Calculate ROUGE scores between each pair of
         lines (hyp_file[i], ref_file[i]).
         Args:
@@ -46,7 +46,8 @@ class FilesRouge:
         with io.open(ref_path, encoding="utf-8", mode="r") as ref_file:
             refs = [line[:-1] for line in ref_file]
 
-        return self.rouge.get_scores(hyps, refs, avg=avg)
+        return self.rouge.get_scores(hyps, refs, avg=avg,
+                                     ignore_empty=ignore_empty)
 
 
 class Rouge:
