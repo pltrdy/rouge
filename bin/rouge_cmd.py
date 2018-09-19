@@ -10,6 +10,8 @@ def main():
     parser.add_argument('-f', '--file', help="File mode", action='store_true')
     parser.add_argument('-a', '--avg', help="Average mode",
                         action='store_true')
+    parser.add_argument('--ignore_empty', action='store_true',
+                        help="Ignore empty hypothesis")
     parser.add_argument('hypothesis', type=str, help='Text of file path')
     parser.add_argument('reference', type=str, help='Text or file path')
 
@@ -20,7 +22,8 @@ def main():
         assert(os.path.isfile(ref))
 
         files_rouge = FilesRouge(hyp, ref)
-        scores = files_rouge.get_scores(avg=args.avg)
+        scores = files_rouge.get_scores(avg=args.avg,
+                                        ignore_empty=args.ignore_empty)
 
         print(json.dumps(scores, indent=2))
     else:
