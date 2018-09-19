@@ -77,11 +77,11 @@ class Rouge:
     def get_scores(self, hyps, refs, avg=False, ignore_empty=False):
         if isinstance(hyps, six.string_types):
             hyps, refs = [hyps], [refs]
-            
+
         if ignore_empty:
             # Filter out hyps of 0 length
             hyps_and_refs = zip(hyps, refs)
-            hyps_and_refs = [ _ for _ in hyps_and_refs if len(_[0]) > 0]
+            hyps_and_refs = [_ for _ in hyps_and_refs if len(_[0]) > 0]
             hyps, refs = zip(*hyps_and_refs)
 
         assert(type(hyps) == type(refs))
