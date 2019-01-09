@@ -62,18 +62,23 @@ class Rouge:
     AVAILABLE_STATS = ["f", "p", "r"]
 
     def __init__(self, metrics=None, stats=None):
-        self.metrics = metrics if metrics is not None \
-            else Rouge.DEFAULT_METRICS
-        self.stats = stats if stats is not None \
-            else Rouge.DEFAULT_STATS
+        if metrics is not None:
+            self.metrics = [m.lower() for m in metrics]
 
-        for m in self.metrics:
-            if m not in Rouge.AVAILABLE_METRICS:
-                raise ValueError("Unknown metric '%s'" % m)
+            for m in self.metrics:
+                if m not in Rouge.AVAILABLE_METRICS:
+                    raise ValueError("Unknown metric '%s'" % m)
+        else:
+            self.metrics = Rouge.DEFAULT_METRICS
 
-        for s in self.stats:
-            if s not in Rouge.AVAILABLE_STATS:
-                raise ValueError("Unknown stat '%s'" % s)
+        if stats is not None:
+            self.stats = [s.lower() for s in stats]
+
+            for s in self.stats:
+                if s not in Rouge.AVAILABLE_STATS:
+                    raise ValueError("Unknown stat '%s'" % s)
+        else:
+            self.stats = Rouge.DEFAULT_STATS
 
     def get_scores(self, hyps, refs, avg=False, ignore_empty=False):
         if isinstance(hyps, six.string_types):
