@@ -117,7 +117,7 @@ class Rouge:
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
                 sc = fn(hyp, ref)
-                scores[m] = {s: scores[m][s] + sc[s] for s in sc}
+                scores[m] = {s: scores[m][s] + sc[s] for s in self.stats}
             count += 1
         scores = {m: {s: scores[m][s] / count for s in scores[m]}
                   for m in scores}
