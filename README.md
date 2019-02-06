@@ -9,7 +9,7 @@ Results may be *slighlty* different, see [discussions in #2](https://github.com/
 #### Clone & Install
 ```shell
 git clone https://github.com/pltrdy/rouge
-cd pyrouge
+cd rouge
 python setup.py install
 # or
 pip install -U .
