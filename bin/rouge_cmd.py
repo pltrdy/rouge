@@ -50,7 +50,7 @@ def main():
         assert(type(ref) == str)
 
         rouge = Rouge()
-        scores = rouge.get_scores(hyp, ref, metrics, stats, avg=args.avg)
+        scores = rouge.get_scores(hyp, ref, avg=args.avg)
 
         print(json.dumps(scores, indent=2))
 
