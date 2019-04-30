@@ -21,6 +21,7 @@ setup(
     long_description=open("README.md").read(),
     test_suite="nose.collector",
     tests_require=['nose'],
+    install_requires=['six'],
 
     entry_points={
         'console_scripts': [
