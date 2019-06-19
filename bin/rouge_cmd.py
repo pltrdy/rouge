@@ -49,7 +49,7 @@ def main():
         assert(type(hyp) == str)
         assert(type(ref) == str)
 
-        rouge = Rouge()
+        rouge = Rouge(metrics, stats)
         scores = rouge.get_scores(hyp, ref, avg=args.avg)
 
         print(json.dumps(scores, indent=2))
