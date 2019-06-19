@@ -1,6 +1,20 @@
+import os
+import re
+
 from setuptools import setup, find_packages
 
-version = "0.3.2"
+
+def get_version():
+    path = os.path.join(os.path.dirname(__file__), 'rouge', '__init__.py')
+    with open(path, 'r') as f:
+        content = f.read()
+    m = re.search(r'__version__\s*=\s*"(.+)"', content)
+    assert m is not None
+    return m.group(1)
+
+
+version = get_version()
+
 setup(
     name="rouge",
     version=version,
@@ -21,6 +35,7 @@ setup(
     long_description=open("README.md").read(),
     test_suite="nose.collector",
     tests_require=['nose'],
+    install_requires=['six'],
 
     entry_points={
         'console_scripts': [
