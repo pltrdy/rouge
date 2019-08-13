@@ -4,6 +4,7 @@ import six
 import rouge.rouge_score as rouge_score
 import io
 import os
+import copy
 
 
 class FilesRouge:
@@ -116,8 +117,12 @@ class Rouge:
 
         count = 0
         for (hyp, ref) in zip(hyps, refs):
+            original_hyp = copy.deepcopy(hyp)
             hyp = [" ".join(_.split()) for _ in hyp.split(".") if len(_) > 0]
             ref = [" ".join(_.split()) for _ in ref.split(".") if len(_) > 0]
+            # fix the bug when hypothesis is simply a period.
+            if len(hyp) == 0 and original_hyp == ["."]:
+                hyp = ["."]
 
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
