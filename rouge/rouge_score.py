@@ -192,8 +192,10 @@ def rouge_n(evaluated_sentences, reference_sentences, n=2):
     Raises:
       ValueError: raises exception if a param has len <= 0
     """
-    if len(evaluated_sentences) <= 0 or len(reference_sentences) <= 0:
-        raise ValueError("Collections must contain at least 1 sentence.")
+    if len(evaluated_sentences) <= 0:
+        raise ValueError("Hypothesis is empty.")
+    if len(reference_sentences) <= 0:
+        raise ValueError("Reference is empty.")
 
     evaluated_ngrams = _get_word_ngrams(n, evaluated_sentences)
     reference_ngrams = _get_word_ngrams(n, reference_sentences)
