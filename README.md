@@ -115,8 +115,8 @@ Given two files `hyp_path`, `ref_path`, with the same number (`n`) of lines, cal
 ```python
 from rouge import FilesRouge
 
-files_rouge = FilesRouge(hyp_path, ref_path)
-scores = files_rouge.get_scores()
+files_rouge = FilesRouge()
+scores = files_rouge.get_scores(hyp_path, ref_path)
 # or
-scores = files_rouge.get_scores(avg=True)
+scores = files_rouge.get_scores(hyp_path, ref_path, avg=True)
 ```

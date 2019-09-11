@@ -39,9 +39,9 @@ def main():
         assert(os.path.isfile(hyp))
         assert(os.path.isfile(ref))
 
-        files_rouge = FilesRouge(hyp, ref, metrics, stats)
-        scores = files_rouge.get_scores(avg=args.avg,
-                                        ignore_empty=args.ignore_empty)
+        files_rouge = FilesRouge(metrics, stats)
+        scores = files_rouge.get_scores(
+            hyp, ref,avg=args.avg, ignore_empty=args.ignore_empty)
 
         print(json.dumps(scores, indent=2))
     else:

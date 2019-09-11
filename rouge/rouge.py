@@ -7,12 +7,12 @@ import os
 
 
 class FilesRouge:
-    def __init__(self, hyp_path, ref_path, metrics=None, stats=None,
-                 batch_lines=None):
+    def __init__(self, metrics=None, stats=None):
+        self.rouge = Rouge(metrics=metrics, stats=stats)
+
+    def _check_files(self, hyp_path, ref_path):
         assert(os.path.isfile(hyp_path))
         assert(os.path.isfile(ref_path))
-
-        self.rouge = Rouge(metrics=metrics, stats=stats)
 
         def line_count(path):
             count = 0
@@ -25,13 +25,7 @@ class FilesRouge:
         ref_lc = line_count(ref_path)
         assert(hyp_lc == ref_lc)
 
-        assert(batch_lines is None or type(batch_lines) == int)
-
-        self.hyp_path = hyp_path
-        self.ref_path = ref_path
-        self.batch_lines = batch_lines
-
-    def get_scores(self, avg=False, ignore_empty=False):
+    def get_scores(self, hyp_path, ref_path, avg=False, ignore_empty=False):
         """Calculate ROUGE scores between each pair of
         lines (hyp_file[i], ref_file[i]).
         Args:
@@ -39,10 +33,11 @@ class FilesRouge:
           * ref_path: references file path
           * avg (False): whether to get an average scores or a list
         """
-        hyp_path, ref_path = self.hyp_path, self.ref_path
+        self._check_files(hyp_path, ref_path)
 
         with io.open(hyp_path, encoding="utf-8", mode="r") as hyp_file:
             hyps = [line[:-1] for line in hyp_file]
+
         with io.open(ref_path, encoding="utf-8", mode="r") as ref_file:
             refs = [line[:-1] for line in ref_file]
 

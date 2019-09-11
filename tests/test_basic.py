@@ -14,7 +14,7 @@ class BasicTest(TestCase):
             self.data = json.load(f)
 
         self.rouge = rouge.Rouge()
-        self.files_rouge = rouge.FilesRouge(self.hyp_path, self.ref_path)
+        self.files_rouge = rouge.FilesRouge()
 
     def test_one_sentence(self):
         for d in self.data[:1]:
@@ -34,5 +34,5 @@ class BasicTest(TestCase):
         data = self.data
         hyps, refs = map(list, zip(*[[d['hyp'], d['ref']] for d in data]))
         expected_scores = [d['scores'] for d in data]
-        scores = self.files_rouge.get_scores()
+        scores = self.files_rouge.get_scores(self.hyp_path, self.ref_path)
         self.assertEqual(expected_scores, scores)
