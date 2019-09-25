@@ -143,9 +143,11 @@ class Rouge:
             m: {s: scores[m][s] / count for s in self.stats}
             for m in self.metrics
         }
-        avg_scores["lengths"] = {
-            k: scores["lengths"][k] / count
-            for k in ["hyp", "ref"]
-        }
+
+        if self.return_lengths:
+            avg_scores["lengths"] = {
+                k: scores["lengths"][k] / count
+                for k in ["hyp", "ref"]
+            }
 
         return avg_scores
