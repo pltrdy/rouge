@@ -7,8 +7,10 @@ import os
 
 
 class FilesRouge:
-    def __init__(self, metrics=None, stats=None):
-        self.rouge = Rouge(metrics=metrics, stats=stats)
+    def __init__(self, *args, **kwargs):
+        """See the `Rouge` class for args
+        """
+        self.rouge = Rouge(*args, **kwargs)
 
     def _check_files(self, hyp_path, ref_path):
         assert(os.path.isfile(hyp_path))
@@ -56,7 +58,8 @@ class Rouge:
     DEFAULT_STATS = ["f", "p", "r"]
     AVAILABLE_STATS = ["f", "p", "r"]
 
-    def __init__(self, metrics=None, stats=None):
+    def __init__(self, metrics=None, stats=None, return_lengths=False):
+        self.return_lengths = return_lengths
         if metrics is not None:
             self.metrics = [m.lower() for m in metrics]
 
@@ -82,7 +85,9 @@ class Rouge:
         if ignore_empty:
             # Filter out hyps of 0 length
             hyps_and_refs = zip(hyps, refs)
-            hyps_and_refs = [_ for _ in hyps_and_refs if len(_[0]) > 0]
+            hyps_and_refs = [_ for _ in hyps_and_refs
+                             if len(_[0]) > 0
+                             and len(_[1]) > 0]
             hyps, refs = zip(*hyps_and_refs)
 
         assert(type(hyps) == type(refs))
@@ -96,6 +101,7 @@ class Rouge:
         scores = []
         for hyp, ref in zip(hyps, refs):
             sen_score = {}
+
             hyp = [" ".join(_.split()) for _ in hyp.split(".") if len(_) > 0]
             ref = [" ".join(_.split()) for _ in ref.split(".") if len(_) > 0]
 
@@ -103,11 +109,20 @@ class Rouge:
                 fn = Rouge.AVAILABLE_METRICS[m]
                 sc = fn(hyp, ref)
                 sen_score[m] = {s: sc[s] for s in self.stats}
+
+            if self.return_lengths:
+                lengths = {
+                    "hyp": len(" ".join(hyp).split()),
+                    "ref": len(" ".join(ref).split())
+                }
+                sen_score["lengths"] = lengths
             scores.append(sen_score)
         return scores
 
     def _get_avg_scores(self, hyps, refs):
         scores = {m: {s: 0 for s in self.stats} for m in self.metrics}
+        if self.return_lengths:
+            scores["lengths"] = {"hyp": 0, "ref": 0}
 
         count = 0
         for (hyp, ref) in zip(hyps, refs):
@@ -118,7 +133,21 @@ class Rouge:
                 fn = Rouge.AVAILABLE_METRICS[m]
                 sc = fn(hyp, ref)
                 scores[m] = {s: scores[m][s] + sc[s] for s in self.stats}
+
+            if self.return_lengths:
+                scores["lengths"]["hyp"] += len(" ".join(hyp).split())
+                scores["lengths"]["ref"] += len(" ".join(ref).split())
+
             count += 1
-        scores = {m: {s: scores[m][s] / count for s in scores[m]}
-                  for m in scores}
-        return scores
+        avg_scores = {
+            m: {s: scores[m][s] / count for s in self.stats}
+            for m in self.metrics
+        }
+
+        if self.return_lengths:
+            avg_scores["lengths"] = {
+                k: scores["lengths"][k] / count
+                for k in ["hyp", "ref"]
+            }
+
+        return avg_scores
