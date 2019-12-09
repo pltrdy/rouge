@@ -344,7 +344,7 @@ def rouge_l_summary_level(
     Calculated according to:
     R_lcs = SUM(1, u)[LCS<union>(r_i,C)]/m
     P_lcs = SUM(1, u)[LCS<union>(r_i,C)]/n
-    F_lcs = ((1 + beta^2)*R_lcs*P_lcs) / (R_lcs + (beta^2) * P_lcs)
+    F_lcs = (2*R_lcs*P_lcs) / (R_lcs * P_lcs)
 
     where:
     SUM(i,u) = SUM from i through u
@@ -392,10 +392,8 @@ def rouge_l_summary_level(
     llcs = union_lcs_sum_across_all_references
     r_lcs = llcs / m
     p_lcs = llcs / n
-    beta = p_lcs / (r_lcs + 1e-12)
-    num = (1 + (beta**2)) * r_lcs * p_lcs
-    denom = r_lcs + ((beta**2) * p_lcs)
-    f_lcs = num / (denom + 1e-12)
+
+    f_lcs = 2.0 * ((p_lcs * r_lcs) / (p_lcs + r_lcs + 1e-8))
 
     if raw_results:
         o = {
