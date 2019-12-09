@@ -28,8 +28,58 @@ from __future__ import absolute_import
 from __future__ import division, print_function, unicode_literals
 import itertools
 
+from copy import deepcopy
 
-def _get_ngrams(n, text):
+
+class Ngrams(object):
+    """
+        Ngrams datastructure based on `set` or `list`
+        depending in `exclusive`
+    """
+
+    def __init__(self, ngrams={}, exclusive=True):
+        if exclusive:
+            self._ngrams = set(ngrams)
+        else:
+            self._ngrams = list(ngrams)
+        self.exclusive = exclusive
+
+    def add(self, o):
+        if self.exclusive:
+            self._ngrams.add(o)
+        else:
+            self._ngrams.append(o)
+
+    def __len__(self):
+        return len(self._ngrams)
+
+    def intersection(self, o):
+        if self.exclusive:
+            inter_set = self._ngrams.intersection(o._ngrams)
+            return Ngrams(inter_set, exclusive=True)
+        else:
+            other_list = deepcopy(o._ngrams)
+            inter_list = []
+
+            for e in self._ngrams:
+                try:
+                    i = other_list.index(e)
+                except ValueError:
+                    continue
+                other_list.pop(i)
+                inter_list.append(e)
+            return Ngrams(inter_list, exclusive=False)
+
+    def union(self, o):
+        if self.exclusive:
+            union_set = self._ngrams.union(o._ngrams)
+            return Ngrams(union_set, exclusive=True)
+        else:
+            union_list = deepcopy(self._ngrams) + deepcopy(o._ngrams)
+            return Ngrams(union_list, exclusive=False)
+
+
+def _get_ngrams(n, text, exclusive=True):
     """Calcualtes n-grams.
 
     Args:
@@ -39,7 +89,7 @@ def _get_ngrams(n, text):
     Returns:
       A set of n-grams
     """
-    ngram_set = set()
+    ngram_set = Ngrams(exclusive=exclusive)
     text_length = len(text)
     max_index_ngram_start = text_length - n
     for i in range(max_index_ngram_start + 1):
@@ -52,14 +102,14 @@ def _split_into_words(sentences):
     return list(itertools.chain(*[_.split(" ") for _ in sentences]))
 
 
-def _get_word_ngrams(n, sentences):
+def _get_word_ngrams(n, sentences, exclusive=True):
     """Calculates word n-grams for multiple sentences.
     """
     assert len(sentences) > 0
     assert n > 0
 
     words = _split_into_words(sentences)
-    return _get_ngrams(n, words)
+    return _get_ngrams(n, words, exclusive=exclusive)
 
 
 def _len_lcs(x, y):
@@ -107,7 +157,7 @@ def _lcs(x, y):
     return table
 
 
-def _recon_lcs(x, y):
+def _recon_lcs(x, y, exclusive=True):
     """
     Returns the Longest Subsequence between x and y.
     Source: http://www.algorithmist.com/index.php/Longest_Common_Subsequence
@@ -133,11 +183,12 @@ def _recon_lcs(x, y):
         else:
             return _recon(i, j - 1)
 
-    recon_tuple = tuple(map(lambda x: x[0], _recon(i, j)))
+    recon_list = list(map(lambda x: x[0], _recon(i, j)))
+    return Ngrams(recon_list, exclusive=exclusive)
     return recon_tuple
 
 
-def multi_rouge_n(sequences, scores_ids, n=2):
+def multi_rouge_n(sequences, scores_ids, n=2, exclusive=True):
     """
     Efficient way to compute highly repetitive scoring
     i.e. sequences are involved multiple time
@@ -155,7 +206,8 @@ def multi_rouge_n(sequences, scores_ids, n=2):
         KeyError: if there's a value of i in scores_ids that is not in
                   [0, len(sequences)[
     """
-    ngrams = [_get_word_ngrams(n, sequence) for sequence in sequences]
+    ngrams = [_get_word_ngrams(n, sequence, exclusive=exclusive)
+              for sequence in sequences]
     counts = [len(ngram) for ngram in ngrams]
 
     scores = []
@@ -174,7 +226,8 @@ def multi_rouge_n(sequences, scores_ids, n=2):
     return scores
 
 
-def rouge_n(evaluated_sentences, reference_sentences, n=2):
+def rouge_n(evaluated_sentences, reference_sentences,
+            n=2, raw_results=False, exclusive=True):
     """
     Computes ROUGE-N of two text collections of sentences.
     Sourece: http://research.microsoft.com/en-us/um/people/cyl/download/
@@ -197,8 +250,10 @@ def rouge_n(evaluated_sentences, reference_sentences, n=2):
     if len(reference_sentences) <= 0:
         raise ValueError("Reference is empty.")
 
-    evaluated_ngrams = _get_word_ngrams(n, evaluated_sentences)
-    reference_ngrams = _get_word_ngrams(n, reference_sentences)
+    evaluated_ngrams = _get_word_ngrams(
+        n, evaluated_sentences, exclusive=exclusive)
+    reference_ngrams = _get_word_ngrams(
+        n, reference_sentences, exclusive=exclusive)
     reference_count = len(reference_ngrams)
     evaluated_count = len(evaluated_ngrams)
 
@@ -206,7 +261,16 @@ def rouge_n(evaluated_sentences, reference_sentences, n=2):
     overlapping_ngrams = evaluated_ngrams.intersection(reference_ngrams)
     overlapping_count = len(overlapping_ngrams)
 
-    return f_r_p_rouge_n(evaluated_count, reference_count, overlapping_count)
+    if raw_results:
+        o = {
+            "hyp": evaluated_count,
+            "ref": reference_count,
+            "overlap": overlapping_count
+        }
+        return o
+    else:
+        return f_r_p_rouge_n(
+            evaluated_count, reference_count, overlapping_count)
 
 
 def f_r_p_rouge_n(evaluated_count, reference_count, overlapping_count):
@@ -226,7 +290,8 @@ def f_r_p_rouge_n(evaluated_count, reference_count, overlapping_count):
     return {"f": f1_score, "p": precision, "r": recall}
 
 
-def _union_lcs(evaluated_sentences, reference_sentence, prev_union=None):
+def _union_lcs(evaluated_sentences, reference_sentence,
+               prev_union=None, exclusive=True):
     """
     Returns LCS_u(r_i, C) which is the LCS score of the union longest common
     subsequence between reference sentence ri and candidate summary C.
@@ -249,7 +314,7 @@ def _union_lcs(evaluated_sentences, reference_sentence, prev_union=None):
       Raises exception if a param has len <= 0
     """
     if prev_union is None:
-        prev_union = set()
+        prev_union = Ngrams(exclusive=exclusive)
 
     if len(evaluated_sentences) <= 0:
         raise ValueError("Collections must contain at least 1 sentence.")
@@ -261,7 +326,7 @@ def _union_lcs(evaluated_sentences, reference_sentence, prev_union=None):
     combined_lcs_length = 0
     for eval_s in evaluated_sentences:
         evaluated_words = _split_into_words([eval_s])
-        lcs = set(_recon_lcs(reference_words, evaluated_words))
+        lcs = _recon_lcs(reference_words, evaluated_words, exclusive=exclusive)
         combined_lcs_length += len(lcs)
         lcs_union = lcs_union.union(lcs)
 
@@ -269,7 +334,8 @@ def _union_lcs(evaluated_sentences, reference_sentence, prev_union=None):
     return new_lcs_count, lcs_union
 
 
-def rouge_l_summary_level(evaluated_sentences, reference_sentences):
+def rouge_l_summary_level(
+        evaluated_sentences, reference_sentences, raw_results=False, exclusive=True, **_):
     """
     Computes ROUGE-L (summary level) of two text collections of sentences.
     http://research.microsoft.com/en-us/um/people/cyl/download/papers/
@@ -302,18 +368,25 @@ def rouge_l_summary_level(evaluated_sentences, reference_sentences):
         raise ValueError("Collections must contain at least 1 sentence.")
 
     # total number of words in reference sentences
-    m = len(set(_split_into_words(reference_sentences)))
+    m = len(
+        Ngrams(
+            _split_into_words(reference_sentences),
+            exclusive=exclusive))
 
     # total number of words in evaluated sentences
-    n = len(set(_split_into_words(evaluated_sentences)))
+    n = len(
+        Ngrams(
+            _split_into_words(evaluated_sentences),
+            exclusive=exclusive))
 
     # print("m,n %d %d" % (m, n))
     union_lcs_sum_across_all_references = 0
-    union = set()
+    union = Ngrams(exclusive=exclusive)
     for ref_s in reference_sentences:
         lcs_count, union = _union_lcs(evaluated_sentences,
                                       ref_s,
-                                      prev_union=union)
+                                      prev_union=union,
+                                      exclusive=exclusive)
         union_lcs_sum_across_all_references += lcs_count
 
     llcs = union_lcs_sum_across_all_references
@@ -323,4 +396,13 @@ def rouge_l_summary_level(evaluated_sentences, reference_sentences):
     num = (1 + (beta**2)) * r_lcs * p_lcs
     denom = r_lcs + ((beta**2) * p_lcs)
     f_lcs = num / (denom + 1e-12)
-    return {"f": f_lcs, "p": p_lcs, "r": r_lcs}
+
+    if raw_results:
+        o = {
+            "hyp": n,
+            "ref": m,
+            "overlap": llcs
+        }
+        return o
+    else:
+        return {"f": f_lcs, "p": p_lcs, "r": r_lcs}
