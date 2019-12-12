@@ -46,8 +46,8 @@ def main():
         print(json.dumps(scores, indent=2))
     else:
         hyp, ref = args.hypothesis, args.reference
-        assert(type(hyp) == str)
-        assert(type(ref) == str)
+        assert(isinstance(hyp, str))
+        assert(isinstance(ref, str))
 
         rouge = Rouge(metrics, stats)
         scores = rouge.get_scores(hyp, ref, avg=args.avg)

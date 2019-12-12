@@ -50,16 +50,20 @@ class FilesRouge:
 class Rouge:
     DEFAULT_METRICS = ["rouge-1", "rouge-2", "rouge-l"]
     AVAILABLE_METRICS = {
-        "rouge-1": lambda hyp, ref: rouge_score.rouge_n(hyp, ref, 1),
-        "rouge-2": lambda hyp, ref: rouge_score.rouge_n(hyp, ref, 2),
-        "rouge-l": lambda hyp, ref:
-            rouge_score.rouge_l_summary_level(hyp, ref),
+        "rouge-1": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 1, **k),
+        "rouge-2": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 2, **k),
+        "rouge-l": lambda hyp, ref, **k:
+            rouge_score.rouge_l_summary_level(hyp, ref, **k),
     }
     DEFAULT_STATS = ["f", "p", "r"]
     AVAILABLE_STATS = ["f", "p", "r"]
 
-    def __init__(self, metrics=None, stats=None, return_lengths=False):
+    def __init__(self, metrics=None, stats=None, return_lengths=False,
+                 raw_results=False, exclusive=False):
         self.return_lengths = return_lengths
+        self.raw_results = raw_results
+        self.exclusive = exclusive
+
         if metrics is not None:
             self.metrics = [m.lower() for m in metrics]
 
@@ -69,14 +73,17 @@ class Rouge:
         else:
             self.metrics = Rouge.DEFAULT_METRICS
 
-        if stats is not None:
-            self.stats = [s.lower() for s in stats]
-
-            for s in self.stats:
-                if s not in Rouge.AVAILABLE_STATS:
-                    raise ValueError("Unknown stat '%s'" % s)
+        if self.raw_results:
+            self.stats = ["hyp", "ref", "overlap"]
         else:
-            self.stats = Rouge.DEFAULT_STATS
+            if stats is not None:
+                self.stats = [s.lower() for s in stats]
+
+                for s in self.stats:
+                    if s not in Rouge.AVAILABLE_STATS:
+                        raise ValueError("Unknown stat '%s'" % s)
+            else:
+                self.stats = Rouge.DEFAULT_STATS
 
     def get_scores(self, hyps, refs, avg=False, ignore_empty=False):
         if isinstance(hyps, six.string_types):
@@ -90,7 +97,7 @@ class Rouge:
                              and len(_[1]) > 0]
             hyps, refs = zip(*hyps_and_refs)
 
-        assert(type(hyps) == type(refs))
+        assert(isinstance(hyps, type(refs)))
         assert(len(hyps) == len(refs))
 
         if not avg:
@@ -107,7 +114,11 @@ class Rouge:
 
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
-                sc = fn(hyp, ref)
+                sc = fn(
+                    hyp,
+                    ref,
+                    raw_results=self.raw_results,
+                    exclusive=self.exclusive)
                 sen_score[m] = {s: sc[s] for s in self.stats}
 
             if self.return_lengths:
@@ -131,7 +142,7 @@ class Rouge:
 
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
-                sc = fn(hyp, ref)
+                sc = fn(hyp, ref, exclusive=self.exclusive)
                 scores[m] = {s: scores[m][s] + sc[s] for s in self.stats}
 
             if self.return_lengths:
