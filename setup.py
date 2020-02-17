@@ -13,6 +13,12 @@ def get_version():
     return m.group(1)
 
 
+def long_description():
+    this_directory = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+        return f.read()
+
+
 version = get_version()
 
 setup(
@@ -32,11 +38,11 @@ setup(
         "Topic :: Text Processing :: Linguistic"
     ],
     license="LICENCE.txt",
-    long_description=open("README.md").read(),
+    long_description=long_description(),
+    long_description_content_type='text/markdown',
     test_suite="nose.collector",
     tests_require=['nose'],
     install_requires=['six'],
-
     entry_points={
         'console_scripts': [
             'rouge=bin.rouge_cmd:main'
