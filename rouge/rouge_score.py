@@ -70,12 +70,16 @@ class Ngrams(object):
                 inter_list.append(e)
             return Ngrams(inter_list, exclusive=False)
 
-    def union(self, o):
+    def union(self, *ngrams):
         if self.exclusive:
-            union_set = self._ngrams.union(o._ngrams)
+            union_set = self._ngrams
+            for o in ngrams:
+                union_set = union_set.union(o._ngrams)
             return Ngrams(union_set, exclusive=True)
         else:
-            union_list = deepcopy(self._ngrams) + deepcopy(o._ngrams)
+            union_list = deepcopy(self._ngrams)
+            for o in ngrams:
+                union_list.extend(o._ngrams)
             return Ngrams(union_list, exclusive=False)
 
 
