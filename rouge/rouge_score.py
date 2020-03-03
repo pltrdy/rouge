@@ -368,6 +368,7 @@ def rouge_l_summary_level(
     Raises:
       ValueError: raises exception if a param has len <= 0
     """
+    exclusive = True
     if len(evaluated_sentences) <= 0 or len(reference_sentences) <= 0:
         raise ValueError("Collections must contain at least 1 sentence.")
 
