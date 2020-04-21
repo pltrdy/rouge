@@ -109,14 +109,14 @@ scores = rouge.get_scores(hyps, refs, avg=True)
 *Output (`avg=False`)*: a list of `n` dicts:
 
 ```
-{"rouge-1": {"f": _, "p": _, "r": _}, "rouge-2" : { .. }, "rouge-3": { ... }}
+{"rouge-1": {"f": _, "p": _, "r": _}, "rouge-2" : { .. }, "rouge-l": { ... }}
 ```
 
 
 *Output (`avg=True`)*: a single dict with average values:
 
 ```
-{"rouge-1": {"f": _, "p": _, "r": _}, "rouge-2" : { ..     }, "rouge-3": { ... }}
+{"rouge-1": {"f": _, "p": _, "r": _}, "rouge-2" : { ..     }, "rouge-l": { ... }}
 ``` 
 
 ###### Score two files (line by line)
