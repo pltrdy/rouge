@@ -59,7 +59,7 @@ class Rouge:
     AVAILABLE_STATS = ["f", "p", "r"]
 
     def __init__(self, metrics=None, stats=None, return_lengths=False,
-                 raw_results=False, exclusive=False):
+                 raw_results=False, exclusive=True):
         self.return_lengths = return_lengths
         self.raw_results = raw_results
         self.exclusive = exclusive
