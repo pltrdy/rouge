@@ -55,8 +55,8 @@ class Rouge:
         "rouge-l": lambda hyp, ref, **k:
             rouge_score.rouge_l_summary_level(hyp, ref, **k),
     }
-    DEFAULT_STATS = ["f", "p", "r"]
-    AVAILABLE_STATS = ["f", "p", "r"]
+    DEFAULT_STATS = ["r", "p", "f"]
+    AVAILABLE_STATS = ["r", "p", "f"]
 
     def __init__(self, metrics=None, stats=None, return_lengths=False,
                  raw_results=False, exclusive=True):
