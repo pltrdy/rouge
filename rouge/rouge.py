@@ -52,6 +52,9 @@ class Rouge:
     AVAILABLE_METRICS = {
         "rouge-1": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 1, **k),
         "rouge-2": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 2, **k),
+        "rouge-3": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 3, **k),
+        "rouge-4": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 4, **k),
+        "rouge-5": lambda hyp, ref, **k: rouge_score.rouge_n(hyp, ref, 5, **k),
         "rouge-l": lambda hyp, ref, **k:
             rouge_score.rouge_l_summary_level(hyp, ref, **k),
     }
