@@ -90,6 +90,8 @@ scores = rouge.get_scores(hypothesis, reference)
 ]
 ```
 
+*Note: "f" stands for f1_score, "p" stands for precision, "r" stands for recall.*
+
 ###### Score multiple sentences
 ```python
 import json
