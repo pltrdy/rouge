@@ -342,8 +342,7 @@ def rouge_l_summary_level(
         evaluated_sentences, reference_sentences, raw_results=False, exclusive=True, **_):
     """
     Computes ROUGE-L (summary level) of two text collections of sentences.
-    http://research.microsoft.com/en-us/um/people/cyl/download/papers/
-    rouge-working-note-v1.3.1.pdf
+    http://research.microsoft.com/en-us/um/people/cyl/download/papers/rouge-working-note-v1.3.1.pdf
 
     Calculated according to:
     R_lcs = SUM(1, u)[LCS<union>(r_i,C)]/m
