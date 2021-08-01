@@ -6,16 +6,39 @@ import io
 import os
 
 
+def exclude_ngrams(sequence, n, exclude_ngrams):
+    from nltk import ngrams
+    sg = ngrams(sequence.split(), n)
+    for g in sg:
+        if g in exclude_ngrams:
+            sequence = sequence.replace(" ".join(g), "").strip()
+    return sequence
+
+
+def exclude_sequences(hyps, refs, excludes, max_n=10, min_n=2):
+    assert len(hyps) == len(refs)
+    assert len(excludes) == len(hyps)
+    assert max_n > min_n
+
+    xhyps = []
+    xrefs = []
+    for i, (h, r, e) in enumerate(zip(hyps, refs, excludes)):
+        for n in range(max_n, min_n, -1):
+            eg = list(ngrams(e.split(), n))
+            h = exclude_ngrams(h, n, eg)
+            r = exclude_ngrams(r, n, eg)
+        xhyps.append(h)
+        xrefs.append(r)
+    return xhyps, xrefs
+
+
 class FilesRouge:
     def __init__(self, *args, **kwargs):
         """See the `Rouge` class for args
         """
         self.rouge = Rouge(*args, **kwargs)
 
-    def _check_files(self, hyp_path, ref_path):
-        assert(os.path.isfile(hyp_path))
-        assert(os.path.isfile(ref_path))
-
+    def _check_files(self, *paths):
         def line_count(path):
             count = 0
             with open(path, "rb") as f:
@@ -23,28 +46,36 @@ class FilesRouge:
                     count += 1
             return count
 
-        hyp_lc = line_count(hyp_path)
-        ref_lc = line_count(ref_path)
-        assert(hyp_lc == ref_lc)
+        lc = None
+        for path in paths:
+            if path is None:
+                continue
 
-    def get_scores(self, hyp_path, ref_path, avg=False, ignore_empty=False):
+            assert os.path.isfile(path), "AssertionError on " + path
+            _lc = line_count(path)
+            if lc is None:
+                lc = _lc
+            else:
+                assert lc == _lc, "AssertionError on " + path
+
+    def get_scores(self, hyp_path, ref_path, exclude_path=None, **kwargs):
         """Calculate ROUGE scores between each pair of
         lines (hyp_file[i], ref_file[i]).
         Args:
           * hyp_path: hypothesis file path
           * ref_path: references file path
-          * avg (False): whether to get an average scores or a list
+          * **kwargs: see `Rouge.get_scores` for doc
         """
-        self._check_files(hyp_path, ref_path)
+        self._check_files(hyp_path, ref_path, exclude_path)
 
-        with io.open(hyp_path, encoding="utf-8", mode="r") as hyp_file:
-            hyps = [line[:-1] for line in hyp_file]
+        def read(path):
+            with io.open(path, encoding="utf-8", mode="r") as f:
+                return [line.strip() for line in f]
 
-        with io.open(ref_path, encoding="utf-8", mode="r") as ref_file:
-            refs = [line[:-1] for line in ref_file]
-
-        return self.rouge.get_scores(hyps, refs, avg=avg,
-                                     ignore_empty=ignore_empty)
+        hyps = read(hyp_path)
+        refs = read(ref_path)
+        exclude = read(exclude_path) if exclude_path is not None else None
+        return self.rouge.get_scores(hyps, refs, exclude=exclude, **kwargs)
 
 
 class Rouge:
@@ -88,7 +119,23 @@ class Rouge:
             else:
                 self.stats = Rouge.DEFAULT_STATS
 
-    def get_scores(self, hyps, refs, avg=False, ignore_empty=False):
+    def get_scores(self, hyps, refs, avg=False, ignore_empty=False,
+                   exclude=None):
+
+        if exclude is not None:
+            print("(excluding)")
+            hyps, refs = exclude_sequences(hyps, refs, exclude)
+            ignore_empty = True
+            hyps = [
+                h if h.replace(".", "").strip() != ""
+                else ""
+                for h in hyps
+            ]
+            refs = [
+                r if r.replace(".", "").strip() != ""
+                else ""
+                for r in refs
+            ]
         if isinstance(hyps, six.string_types):
             hyps, refs = [hyps], [refs]
 

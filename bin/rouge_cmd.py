@@ -19,6 +19,11 @@ def main():
                         help="Ignore empty hypothesis")
     parser.add_argument('hypothesis', type=str, help='Text of file path')
     parser.add_argument('reference', type=str, help='Text or file path')
+    parser.add_argument(
+        '-exclude', '-x',
+        type=str,
+        default=None,
+        help='Text or file path')
     parser.add_argument("--metrics", nargs="+", type=str.upper,
                         choices=METRICS_CHOICES.keys(),
                         help="Metrics to use (default=all)")
@@ -36,12 +41,11 @@ def main():
 
     if args.file:
         hyp, ref = args.hypothesis, args.reference
-        assert(os.path.isfile(hyp))
-        assert(os.path.isfile(ref))
 
         files_rouge = FilesRouge(metrics, stats)
         scores = files_rouge.get_scores(
-            hyp, ref, avg=args.avg, ignore_empty=args.ignore_empty)
+            hyp, ref, exclude_path=args.exclude,
+            avg=args.avg, ignore_empty=args.ignore_empty)
 
         print(json.dumps(scores, indent=2))
     else:
@@ -50,7 +54,7 @@ def main():
         assert(isinstance(ref, str))
 
         rouge = Rouge(metrics, stats)
-        scores = rouge.get_scores(hyp, ref, avg=args.avg)
+        scores = rouge.get_scores(hyp, ref, exclude=exclude, avg=args.avg)
 
         print(json.dumps(scores, indent=2))
 
