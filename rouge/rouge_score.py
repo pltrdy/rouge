@@ -173,24 +173,20 @@ def _recon_lcs(x, y, exclusive=True):
     Returns:
       sequence: LCS of x and y
     """
-    i, j = len(x), len(y)
     table = _lcs(x, y)
-
-    def _recon(i, j):
-        """private recon calculation"""
-        if i == 0 or j == 0:
-            return []
-        elif x[i - 1] == y[j - 1]:
-            return _recon(i - 1, j - 1) + [(x[i - 1], i)]
+    res = []
+    i, j = len(x), len(y)
+    while i > 0 and j > 0:
+        if x[i-1] == y[j-1]:
+            res.append(x[i-1])
+            i -= 1
+            j -= 1
         elif table[i - 1, j] > table[i, j - 1]:
-            return _recon(i - 1, j)
+            i -= 1
         else:
-            return _recon(i, j - 1)
+            j -= 1
 
-    recon_list = list(map(lambda x: x[0], _recon(i, j)))
-    return Ngrams(recon_list, exclusive=exclusive)
-    return recon_tuple
-
+    return Ngrams(res[::-1], exclusive=exclusive)
 
 def multi_rouge_n(sequences, scores_ids, n=2, exclusive=True):
     """
