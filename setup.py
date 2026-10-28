@@ -45,7 +45,7 @@ setup(
     install_requires=['six'],
     entry_points={
         'console_scripts': [
-            'rouge=bin.rouge_cmd:main'
+            'rouge=rouge.rouge_cmd:main'
         ]
     }
 )
