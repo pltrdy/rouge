@@ -93,11 +93,15 @@ class Rouge:
             hyps, refs = [hyps], [refs]
 
         if ignore_empty:
-            # Filter out hyps of 0 length
+            # Ignore pairs without content after sentence splitting.
             hyps_and_refs = zip(hyps, refs)
             hyps_and_refs = [_ for _ in hyps_and_refs
-                             if len(_[0]) > 0
-                             and len(_[1]) > 0]
+                             if _[0].replace(".", " ").strip()
+                             and _[1].replace(".", " ").strip()]
+            if not hyps_and_refs:
+                if avg:
+                    raise ValueError("No non-empty hypothesis/reference pairs.")
+                return []
             hyps, refs = zip(*hyps_and_refs)
 
         assert(isinstance(hyps, type(refs)))
@@ -112,8 +116,8 @@ class Rouge:
         for hyp, ref in zip(hyps, refs):
             sen_score = {}
 
-            hyp = [" ".join(_.split()) for _ in hyp.split(".") if len(_) > 0]
-            ref = [" ".join(_.split()) for _ in ref.split(".") if len(_) > 0]
+            hyp = [" ".join(_.split()) for _ in hyp.split(".") if _.strip()]
+            ref = [" ".join(_.split()) for _ in ref.split(".") if _.strip()]
 
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
@@ -140,8 +144,8 @@ class Rouge:
 
         count = 0
         for (hyp, ref) in zip(hyps, refs):
-            hyp = [" ".join(_.split()) for _ in hyp.split(".") if len(_) > 0]
-            ref = [" ".join(_.split()) for _ in ref.split(".") if len(_) > 0]
+            hyp = [" ".join(_.split()) for _ in hyp.split(".") if _.strip()]
+            ref = [" ".join(_.split()) for _ in ref.split(".") if _.strip()]
 
             for m in self.metrics:
                 fn = Rouge.AVAILABLE_METRICS[m]
